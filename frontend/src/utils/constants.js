@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+export const API_BASE = import.meta.env.PROD ? '/api' : 'http://localhost:8000/api';
 
 export const GRAVEYARD_CASES = [
   { id: 'GA-0142', name: 'Case: The Premature Scale', cod: 'Cause of death: Overhiring before PMF', desc: 'Grew headcount 4x in six months chasing a growth metric that never converted to retained revenue. Burn outpaced any realistic fundraising timeline.', tags: ['Cash burn', 'Series A'] },

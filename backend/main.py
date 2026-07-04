@@ -75,7 +75,7 @@ def verdict_for(score: float) -> str:
     return "FAILURE"
 
 
-@app.get("/")
+@app.get("/api/")
 def root():
     return {
         "service": "Graveyard AI API",
@@ -85,7 +85,7 @@ def root():
     }
 
 
-@app.get("/health")
+@app.get("/api/health")
 def health(db: Session = Depends(get_db)):
     db_ok = True
     try:
@@ -95,7 +95,7 @@ def health(db: Session = Depends(get_db)):
     return {"status": "ok", "model_loaded": model is not None, "database_ok": db_ok}
 
 
-@app.post("/predict", response_model=DiagnosisResponse)
+@app.post("/api/predict", response_model=DiagnosisResponse)
 def predict(payload: IntakeRequest, db: Session = Depends(get_db)):
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded on server.")
@@ -165,13 +165,13 @@ def predict(payload: IntakeRequest, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/cases", response_model=List[CaseSummary])
+@app.get("/api/cases", response_model=List[CaseSummary])
 def list_cases(limit: int = 20, db: Session = Depends(get_db)):
     cases = db.query(Case).order_by(Case.created_at.desc()).limit(limit).all()
     return cases
 
 
-@app.get("/cases/{case_code}")
+@app.get("/api/cases/{case_code}")
 def get_case(case_code: str, db: Session = Depends(get_db)):
     case = db.query(Case).filter(Case.case_code == case_code).first()
     if not case:
@@ -200,7 +200,7 @@ def get_case(case_code: str, db: Session = Depends(get_db)):
     }
 
 
-@app.get("/stats", response_model=StatsResponse)
+@app.get("/api/stats", response_model=StatsResponse)
 def stats(db: Session = Depends(get_db)):
     total = db.query(func.count(Case.id)).scalar() or 0
     avg_score = db.query(func.avg(Case.risk_score)).scalar() or 0.0
